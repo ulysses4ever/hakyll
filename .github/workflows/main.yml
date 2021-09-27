@@ -1,0 +1,54 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        stack: ["2.7.3"]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - uses: haskell/actions/setup@v1
+        with:
+          enable-stack: true
+          stack-version: ${{ matrix.stack }}
+          stack-no-global: true
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.stack
+          key: ${{ runner.os }}-stack
+
+      - name: Build dependencies
+        run: stack build --only-dependencies
+
+      - name: Build site executable
+        run: stack build
+
+      - name: Deploy
+        run: |
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            stack exec site rebuild
+            git checkout github-pages
+            git pull --rebase
+            cp -a -v _site/. .
+            git add --all
+            git commit -m "[`date '+%F %T %Z'`] Site Update"
+            git push origin github-pages:pages-github
