@@ -55,4 +55,4 @@ jobs:
             cp -a -v _site/. .
             git add --all
             git commit -m "[`date '+%F %T %Z'`] Site Update"
-            git push origin github-pages:pages-github
+            git push origin github-pages:github-pages
