@@ -3,3 +3,6 @@ _site/
 dist-newstyle/
 .stack-work
 stack.yaml.lock
+site.o
+site.hi
+site
