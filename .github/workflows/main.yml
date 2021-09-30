@@ -15,10 +15,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        stack: ["2.7.3"]
-
     steps:
       - uses: actions/checkout@v2
         with:
@@ -28,31 +24,28 @@ jobs:
         with:
           ref: main
 
-      - uses: haskell/actions/setup@v1
+      - uses: cachix/install-nix-action@v13
         with:
-          enable-stack: true
-          stack-version: ${{ matrix.stack }}
-          stack-no-global: true
+          nix_path: nixpkgs=channel:nixos-unstable
 
       - uses: actions/cache@v1
         with:
-          path: ~/.stack
-          key: ${{ runner.os }}-stack
-
-      - name: Build dependencies
-        run: stack build --only-dependencies
+          path: /nix/store
+          key: store
 
       - name: Build site executable
-        run: stack build
+        run: |
+          nix-shell --run "ghc site.hs -threaded -rtsopts -with-rtsopts=-N"
 
       - name: Deploy
         run: |
             git config user.name github-actions
             git config user.email github-actions@github.com
-            stack exec site rebuild
+            ./site rebuild
             git checkout github-pages
             git pull --rebase
             cp -a -v _site/. .
             git add --all
             git commit -m "[`date '+%F %T %Z'`] Site Update"
             git push origin github-pages:github-pages
+
