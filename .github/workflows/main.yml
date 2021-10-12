@@ -30,13 +30,13 @@ jobs:
 
       - name: Build site executable
         run: |
-          nix-shell --run "ghc site.hs -threaded -rtsopts -with-rtsopts=-N"
+          make build
 
       - name: Deploy
         run: |
             git config user.name github-actions
             git config user.email github-actions@github.com
-            ./site rebuild
+            make generate
             git checkout github-pages
             git pull --rebase
             cp -a -v _site/. .

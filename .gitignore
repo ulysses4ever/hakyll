@@ -1,5 +1,6 @@
 _cache/
 _site/
+result
 dist-newstyle/
 .stack-work
 stack.yaml.lock
