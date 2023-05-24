@@ -1,6 +1,6 @@
 ##
 # My webisite
-.PHONY: all build generate update-nix
+.PHONY: all build generate serve
 
 all: build generate
 
@@ -10,8 +10,7 @@ build:
 generate:
 	./result/bin/site rebuild
 
-update-nix:
-	nix-shell -p cabal2nix --run "cabal2nix --shell . > default.nix"
-
+serve:
+	./result/bin/site server
 
 # end
